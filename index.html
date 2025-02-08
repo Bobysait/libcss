@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="./libcss.js" type="module"></script>
+    <script src="./libjs.js" type="module"></script>
     <title>Document</title>
+    <script src="./index.js" type="module"></script>
 </head>
 <body>
     <div class="w-100 bg-gray border border-black p-1">
@@ -33,6 +35,23 @@
                 <div class="w-full bg-purple border border-dashed border-orange p-1">12€</div>
                 <div class="w-full bg-cyan border border-dashed border-orange p-1">17€</div>
             </div>
+        </div>
+    </div>
+    <div id="root" style="padding-top:24px">
+        <div style="display:flex; gap:20px; width:100%; padding:10px; background:#888; height: 200px;">
+            <div style="flex:1;">
+                <search-select
+                    title="Select with a SearchBar"
+                    placeholder="this is a placeholder"
+                    value=""
+                    filtered="true"
+                >
+                    <option value="item 1">item 1</option>
+                    <option value="item 2">item 2</option>
+                    <option value="item 3">item 3</option>
+                </search-select>
+            </div>
+            <div style="flex:1;" id="js-searchbar"></div>
         </div>
     </div>
 </body>

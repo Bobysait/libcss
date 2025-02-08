@@ -116,7 +116,6 @@ flexNowrap:{flexWrap:'nowrap'},
     }
     const nbs = {['NULL']:'1px',...standardSizes, ...numbersKV(0,24, 0.5, 0, 'px')}
     Object.keys(nbs).forEach(k => {
-        console.log(k,nbs[k])
         const k1=k!=='NULL'?`-${k}`:''
         const k2=`${nbs[k]}`
         o[`rounded${k1}`] = {borderRadius:k2}
