@@ -2,7 +2,7 @@ const min=1, $L=min?'':'\n', $T=min?'':'\t', $_=min?'':' '
 const formatCssKey = (name) => name.replace(/([A-Z])/g, '-$1').replace(".","\\.").toLowerCase()
 , addCssProperty = (property) => (([...(Object.keys(property))]).map(k => $T+`${formatCssKey(k)}:${$_}${property[k]};${$L}`)).join("")
 , addCssProperties = (properties) => (properties instanceof Array)?properties.map(p => addCssProperty(p)).join():addCssProperty(properties)
-, addCssClass = (className, properties) => `${className==="*"?"":'.'}${formatCssKey(className)}${$_}{${$L}${addCssProperties(properties)}}${$L}`
+, addCssClass = (className, properties) => `${className==="*"?"":'.'}${formatCssKey(className)}${$_}{${$L}${addCssProperties(properties)}}${$L}${className!=="*"?`.hover\\:${formatCssKey(className)}:hover${$_}{${$L}${addCssProperties(properties)}}${$L}`:''}`
 , addCssRules = (rules) => [...Object.keys(rules)].map(r => addCssClass(r, rules[r])).join($L)+"\n"
 const numbers = (v0, v1, inc, est=false) => Array.from({length: Math.floor((v1 - v0) / inc) + (est?2:1)}, (_, i) => est&&i===0?'':v0 + ((est?i-1:i) * inc))
 , numbersKV = (v0, v1, inc, est=false, sfx='') => {
@@ -44,7 +44,7 @@ const standardSizes = {
 
 const hcolors = {
 transparent:'transparent',
-black:'#000',white:'#fff',gray:'#888',silver:'#ccc',
+black:'#000',charcoal:'#111',ash:'#222',onyx:'#333',quartz:'#444',shadow:'#666',gray:'#888',mist:'#bbb',silver:'#ddd',ghost:'#f3f3f3',white:'#fff',
 red:'#f00',green:'#0f0',blue:'#00f',
 yellow:'#ff0',cyan:'#0ff',magenta:'#f0f',orange:'#f80',purple:'#808',
 brown:'#880',pink:'#f08',teal:'#0f8',lime:'#8f0',

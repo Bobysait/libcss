@@ -1,17 +1,29 @@
 const xmlns = "http://www.w3.org/2000/svg"
 const svgChevron = () => {
     const icon = document.createElementNS(xmlns,"svg")
-    icon.setAttributeNS(null, "viewBox", "0 0 20 12")
+    icon.setAttributeNS(null, "viewBox", "0 0 20 10")
     icon.setAttributeNS(null, "width", 12)
     icon.setAttributeNS(null, "height", 12)
-    icon.setAttributeNS(null, "fill", "#000")
+    icon.setAttributeNS(null, "fill", "currentColor")
     const g = document.createElementNS(xmlns, "g")
     const path = document.createElementNS(xmlns, "path")
-    path.setAttributeNS(null, 'd', "M19 0 10 9 1 0 0 1 10 11.5 20 1")
+    path.setAttributeNS(null, 'd', "M0 0 10 10 20 0 16 0 10 6 4 0")
     g.appendChild(path)
     icon.appendChild(g)
     return icon
 }
+
+const trans_0 = "0s"
+const transD_0 = "0s"
+const transD_SM = "0s"
+const transD_MD = "0.1s"
+const transD_LG = "0.2s"
+const transD_XL = "0.25s"
+const trans_SM = "0.15s"
+const trans_MD = "0.2s"
+const trans_LG = "0.25s"
+
+const $_dark = "@media (prefers-color-scheme: dark)"
 
 const searchSelectClass = `
 .search-select-wrapper {
@@ -20,14 +32,13 @@ const searchSelectClass = `
         padding: 0;
         margin: 0;
     }
+    font-family: sans-serif;
+    font-size: 1rem;
     box-sizing: border-box;
-    height: 2rem;
+    height: 2.5rem;
     position: relative;
-    transition: border-radius 0.15s, box-shadow 0.25s;
+    transition: border-radius ${trans_SM} ${transD_0}, box-shadow ${trans_MD} ${transD_0};
 
-    &:hover .search-select-opener {
-        background-color: #0bf;
-    }
     & .search-select-heading {
         width: 100%;
         height: 100%;
@@ -35,11 +46,21 @@ const searchSelectClass = `
         justify-content: space-between;
         align-items: center;
         gap: 4px;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        border: 1px solid #0006;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
         background-color: #fff;
         box-shadow: 0 6px 6px 1px #0002;
+        ${$_dark} {
+            background-color: #000;
+        }
+
+        &:hover .search-select-opener {
+            background-color: #0bf;
+            ${$_dark} {
+                background-color: #05a;
+            }
+            
+        }
     }
     & .search-select-title {
         display: flex;
@@ -51,6 +72,12 @@ const searchSelectClass = `
         &:placeholder {
             color: #999;
         }
+        ${$_dark} {
+            color: #ccc;
+            &:placeholder {
+                color: #999;
+            }
+        }
     }
     & .search-select-opener {
         display: flex;
@@ -61,25 +88,51 @@ const searchSelectClass = `
         height: 1rem;
         border: 1px solid #0006;
         border-radius: 0.25rem;
+        color: #000;
+        ${$_dark} {
+            background-color: #038;
+            border: 1px solid #fff6;
+            color: #fff;
+        }
         & svg {
             width: 0.5rem;
             height: 0.5rem;
-            transition: transform 0.25s;
+            transition: transform ${trans_SM} ${transD_0};
+            color: #000;
+            ${$_dark} {
+                color: #fff;
+            }
         }
         &:hover {
             background-color: #0bf;
+            ${$_dark} {
+                background-color: #05a;
+            }
         }
+    }
+    & .search-select-input-container {
+        width: 100%;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0 0.5rem;
+        opacity: 0;
+        transition: opacity ${trans_LG} ${transD_MD} ;
     }
     & .search-select-input {
         background-color: transparent;
         border: none;
         width: 100%;
-        height: 1.5rem;
+        height: 100%;
+        border: 1px solid #0002;
         padding: 0 0.5rem;
-        opacity: 0;
-        transition: opacity 0.3s 0.25s;
         &:focus {
             outline: none;
+        }
+        ${$_dark} {
+            color: #fff;
         }
     }
     & .search-select-content {
@@ -91,22 +144,23 @@ const searchSelectClass = `
         display: flex;
         flex-direction: column;
         padding: 0.25rem 0;
-        border: 1px solid #0006;
         border-top: none;
-        border-radius: 0 0 5px 5px;
+        border-radius: 0 0 0.5rem 0.5rem;
         background-color: #fff;
         box-shadow: 0 6px 6px 1px #0002;
         visibility: hidden;
         opacity: 0;
         transform: scale(1,0) translateY(-5rem);
-        transition: transform 0.25s 0.15s, visibility 0.15s, height 0.25s 0.15s ease-in-out, opacity 0.3s 0.15s ease-in-out;
+        transition: transform ${trans_MD} ${transD_SM}, visibility ${trans_SM} ${transD_0}, height ${trans_SM} ${transD_SM} ease-in-out, opacity ${trans_LG} ${transD_SM} ease-in-out;
+        ${$_dark} {
+            background-color: #000;
+        }
         & .search-select-scrollable {
             width: 100%;
             height: 100%;
             overflow-y: auto;
             padding: 0.25rem 0;
             min-height: 2rem;
-            border: 1px solid #0006;
             & .search-select-selecteds {
                 display: flex;
                 flex-wrap: wrap;
@@ -121,10 +175,10 @@ const searchSelectClass = `
     }
 
     &[open="true"] .search-select-heading {
-        border-radius: 0.25rem 0.25rem 0 0;
+        border-radius: 0.5rem 0.5rem 0 0;
         box-shadow: 0 0 0 0 #0000;
     }
-    &[open="true"] .search-select-input {
+    &[open="true"] .search-select-input-container {
         opacity: 1;
     }
     &[open="true"] .search-select-content {
@@ -138,9 +192,20 @@ const searchSelectClass = `
     }
 }`
 
+// const clickawayListener = (e) => {
+//     document.querySelectorAll("search-select").forEach((el) => {
+//         if (!el.contains(e.target)) {
+//             console.log("click ?")
+//             el.open = false
+//         }
+//     })
+// }
+
+// document.addEventListener("click", clickawayListener)
+
 class SearchSelect extends HTMLElement {
     static get observedAttributes() {
-        return ['title', 'value', 'placeholder', 'filtered', 'options']
+        return ['title', 'value', 'placeholder', 'filtered', 'options', 'open']
     }
 
     constructor() {
@@ -167,6 +232,7 @@ class SearchSelect extends HTMLElement {
         this._opener = document.createElement("div")
 
         this._content = document.createElement("div")
+        this._inputContainer = document.createElement("div")
         this._input = document.createElement("input")
         this._scrollable = document.createElement("div")
         this._selecteds = document.createElement("div")
@@ -178,6 +244,7 @@ class SearchSelect extends HTMLElement {
         this._title.setAttribute("class", "search-select-title")
         this._opener.setAttribute("class", "search-select-opener")
         this._content.setAttribute("class", "search-select-content")
+        this._inputContainer.setAttribute("class", "search-select-input-container")
         this._input.setAttribute("class", "search-select-input")
         this._scrollable.setAttribute("class", "search-select-scrollable")
         this._selecteds.setAttribute("class", "search-select-selecteds")
@@ -194,7 +261,8 @@ class SearchSelect extends HTMLElement {
         this._opener.appendChild(svgChevron())
         this._heading.appendChild(this._title)
         this._heading.appendChild(this._opener)
-        this._content.appendChild(this._input)
+        this._inputContainer.appendChild(this._input)
+        this._content.appendChild(this._inputContainer)
         this._scrollable.appendChild(this._selecteds)
         this._list.appendChild(this._scrollable)
         this._content.appendChild(this._scrollable)
@@ -209,12 +277,21 @@ class SearchSelect extends HTMLElement {
         this._input.addEventListener("input", () => {
             this.filterItems(this._input.value)
         })
+
         const openClose = (e) => {
             this._wrapper.setAttribute("open", !this._open)
             this._open = !this._open
-            e.stopPropagation()
             e.preventDefault()
         }
+
+        const clickAwayListener = (e) => {
+            if (!this.contains(e.target)) {
+                this.close()
+            }
+        }
+
+        document.addEventListener("click", clickAwayListener)
+
         this._heading.addEventListener("click", openClose)
 
         this._updateOptions(this._options)
@@ -242,6 +319,11 @@ class SearchSelect extends HTMLElement {
         console.log({
           added: added.filter(el => el.nodeType === Node.ELEMENT_NODE),
         })
+    }
+
+    close() {
+        this._wrapper.setAttribute("open", false)
+        this._open = false
     }
 
     set title(title) {
@@ -294,6 +376,17 @@ class SearchSelect extends HTMLElement {
 
     get value() {
         return JSON.parse(this.getAttribute('value'))
+    }
+
+    set open(val) {
+        console.log("Set Open", val)
+        this._open = !!val
+        this.setAttribute('open', this._open)
+        this._wrapper.setAttribute("open", this._open)
+    }
+
+    get open() {
+        return !!this.getAttribute('value')
     }
 
     set placeholder(placeholder) {
