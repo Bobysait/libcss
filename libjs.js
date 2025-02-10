@@ -35,11 +35,13 @@ const searchSelectClass = `
     font-family: sans-serif;
     font-size: 1rem;
     box-sizing: border-box;
+    width: 100%;
     height: 2.5rem;
     position: relative;
     transition: border-radius ${trans_SM} ${transD_0}, box-shadow ${trans_MD} ${transD_0};
 
     & .search-select-heading {
+        cursor: pointer;
         width: 100%;
         height: 100%;
         display: flex;
@@ -57,18 +59,19 @@ const searchSelectClass = `
         &:hover .search-select-opener {
             background-color: #0bf;
             ${$_dark} {
-                background-color: #05a;
+                background-color: #777;
             }
             
         }
     }
     & .search-select-title {
-        display: flex;
-        align-items: center;
+        cursor: pointer;
         user-select: none;
         color: #555;
-        width: 100%;
-        height: 100%;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
         &:placeholder {
             color: #999;
         }
@@ -84,15 +87,17 @@ const searchSelectClass = `
         justify-content: center;
         align-items: center;
         background-color: #abf;
-        width: 1rem;
-        height: 1rem;
-        border: 1px solid #0006;
+        width: 1.25rem;
+        min-width: 1.25rem;
+        height: 1.25rem;
         border-radius: 0.25rem;
         color: #000;
         ${$_dark} {
-            background-color: #038;
-            border: 1px solid #fff6;
+            background-color: #555;
             color: #fff;
+            &:hover {
+                background-color: #777;
+            }
         }
         & svg {
             width: 0.5rem;
@@ -113,20 +118,22 @@ const searchSelectClass = `
     & .search-select-input-container {
         width: 100%;
         height: 1.5rem;
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem;
         padding: 0 0.5rem;
         opacity: 0;
         transition: opacity ${trans_LG} ${transD_MD} ;
+        &[filtered="true"] {
+            display: flex;
+        }
     }
     & .search-select-input {
         background-color: transparent;
         border: none;
         width: 100%;
         height: 100%;
-        border: 1px solid #0002;
         padding: 0 0.5rem;
         &:focus {
             outline: none;
@@ -143,7 +150,8 @@ const searchSelectClass = `
         height: 0px;
         display: flex;
         flex-direction: column;
-        padding: 0.25rem 0;
+        gap: 0.25rem;
+        padding: 0.5rem 0;
         border-top: none;
         border-radius: 0 0 0.5rem 0.5rem;
         background-color: #fff;
@@ -159,17 +167,42 @@ const searchSelectClass = `
             width: 100%;
             height: 100%;
             overflow-y: auto;
-            padding: 0.25rem 0;
+            &::-webkit-scrollbar { display: none; }
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            padding: 0.5rem 0;
             min-height: 2rem;
+            & .search-select-list, 
             & .search-select-selecteds {
                 display: flex;
+                flex-direction: column;
                 flex-wrap: wrap;
-                gap: 0.25rem;
             }
-            & .search-select-list {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.25rem;
+            & .search-select-option {
+                cursor: pointer;
+                padding: 0.125rem 1rem;
+                color: #fff;
+                transition: background-color ${trans_MD} ease-in-out, color ${trans_MD} ease-in-out;
+                &:hover {
+                    background-color: #0bf;
+                    color: #000;
+                }
+                &[filtered="true"] {
+                    display: none;
+                }
+            }
+            & .search-select-list .search-select-option {
+                &[selected="true"] {
+                    display: none;
+                }
+            }
+            & .search-select-selecteds .search-select-option {
+                background-color: #fd5;
+                color: #000;
+                &:hover {
+                    background-color: #f80;
+                    color: #000;
+                }
             }
         }
     }
@@ -184,7 +217,7 @@ const searchSelectClass = `
     &[open="true"] .search-select-content {
         transform: scale(1,1) translateY(0rem);
         visibility: visible;
-        height: 200px;
+        height: 250px;
         opacity: 1;
     }
     &[open="true"] .search-select-opener svg {
@@ -192,38 +225,27 @@ const searchSelectClass = `
     }
 }`
 
-// const clickawayListener = (e) => {
-//     document.querySelectorAll("search-select").forEach((el) => {
-//         if (!el.contains(e.target)) {
-//             console.log("click ?")
-//             el.open = false
-//         }
-//     })
-// }
-
-// document.addEventListener("click", clickawayListener)
-
 class SearchSelect extends HTMLElement {
     static get observedAttributes() {
-        return ['title', 'value', 'placeholder', 'filtered', 'options', 'open']
+        return ['title', 'value', 'placeholder', 'filtered', 'multiSelection', 'open']
     }
 
     constructor() {
         super()
-        console.log("Constructeur appelé")
+
         const shadow = this.attachShadow({ mode: "open" })
 
         const title = this.getAttribute("title")
         const placeholder = this.getAttribute("placeholder")
         const value = this.getAttribute("value")
         const filtered = this.getAttribute("filtered")
+        const multiSelection = this.getAttribute("multi-selection")
         const open = (!!this.getAttribute("open")) ?? false
-        const options = this.getAttribute("options")
+
         console.log("filtered", filtered)
-        console.log("options", options)
+
         this._open = open
         this._filtered = filtered
-        this._options = options
 
         this._wrapper = document.createElement("div")
 
@@ -245,6 +267,7 @@ class SearchSelect extends HTMLElement {
         this._opener.setAttribute("class", "search-select-opener")
         this._content.setAttribute("class", "search-select-content")
         this._inputContainer.setAttribute("class", "search-select-input-container")
+        this._inputContainer.setAttribute("filtered", this._filtered)
         this._input.setAttribute("class", "search-select-input")
         this._scrollable.setAttribute("class", "search-select-scrollable")
         this._selecteds.setAttribute("class", "search-select-selecteds")
@@ -264,20 +287,12 @@ class SearchSelect extends HTMLElement {
         this._inputContainer.appendChild(this._input)
         this._content.appendChild(this._inputContainer)
         this._scrollable.appendChild(this._selecteds)
-        this._list.appendChild(this._scrollable)
+        this._scrollable.appendChild(this._list)
         this._content.appendChild(this._scrollable)
-
+        
         this._wrapper.appendChild(this._heading)
         this._wrapper.appendChild(this._content)
     
-        this.filtered = filtered
-        this._observer = null
-        this.onMutation = this.onMutation.bind(this)
-
-        this._input.addEventListener("input", () => {
-            this.filterItems(this._input.value)
-        })
-
         const openClose = (e) => {
             this._wrapper.setAttribute("open", !this._open)
             this._open = !this._open
@@ -290,11 +305,18 @@ class SearchSelect extends HTMLElement {
             }
         }
 
-        document.addEventListener("click", clickAwayListener)
+        this._observer = null
 
+        this._input.addEventListener("input", () => {
+            this.filterItems(this._input.value)
+        })
+        this.filtered = filtered
+        this._multiSelection = multiSelection
+        this.onMutation = this.onMutation.bind(this)
+        document.addEventListener("click", clickAwayListener)
         this._heading.addEventListener("click", openClose)
 
-        this._updateOptions(this._options)
+        this._updateOptions()
         shadow.appendChild(style)
         shadow.appendChild(this._wrapper)
     }
@@ -340,32 +362,51 @@ class SearchSelect extends HTMLElement {
         return JSON.parse(this.getAttribute('title'))
     }
 
-    _updateOptions (options) {
-        console.log("Update options", options)
-        this._options = options
-        this._list.innerHTML = ""
-        this._options?.forEach(option => {
-            const item = document.createElement("div")
-            item.textContent = option
-            this._list.appendChild(item)
+    _updateOptions () {
+        const children = [...this.children].filter(child => child.tagName === "OPTION")
+        children.forEach(child => {
+            const option = document.createElement("div")
+            option.textContent = child.textContent
+            option.setAttribute("class", "search-select-option")
+            option.setAttribute("value", option.getAttribute("value")??child.textContent)
+            option.addEventListener("click", () => {
+                if (!this._multiSelection) {
+                    this._list.querySelectorAll(`.search-select-option`).forEach(c=>c.removeAttribute("selected"))
+                    this._selecteds.innerHTML = ""
+                }
+                option.setAttribute("selected", true)
+                const selected = document.createElement("div")
+                selected.textContent = option.textContent
+                selected.setAttribute("class", "search-select-option")
+                selected.setAttribute("filtered", option.getAttribute("filtered"))
+                selected.setAttribute("value", option.getAttribute("value"))
+                selected.addEventListener("click", () => {
+                    selected.remove()
+                    option.removeAttribute("selected")
+                })
+                this._selecteds.appendChild(selected)
+            })
+            this._list.appendChild(option)
+            console.log("child", child, option)
         })
-    }
-    set options(options) {
-        _updateOptions (options)
-    }
-
-    get options() {
-        return this._options
     }
 
     set filtered(filtered) {
-        console.log("Set text", filtered)
+        console.log("Set filtered", filtered)
         this._filtered = filtered
-        this._input.style.display = filtered ? "block" : "none"
+        this._inputContainer.setAttribute("filtered", this._filtered)
     }
 
     get filtered() {
         return JSON.parse(this.getAttribute('filtered'))
+    }
+
+    set multiSelection(enabled) {
+        console.log("Set multiSelection", enabled)
+        this._multiSelection = enabled
+    }
+    get multiSelection() {
+        return this._multiSelection
     }
 
     set value(val) {
@@ -400,7 +441,18 @@ class SearchSelect extends HTMLElement {
     }
 
     filterItems(filter) {
-        console.log("filter items", filter)
+        if (!this._filtered) return
+        console.log("%cfiltering: %c'%s'%c", "color:purple",  "color:orange", filter, "color:purple")
+        const v = filter.toLowerCase()
+        this._list.querySelectorAll(`.search-select-option`).forEach(option => {
+            if (option.textContent.toLowerCase().includes(v)) {
+                option.removeAttribute("filtered")
+                console.log("preserved", option.getAttribute("value"))
+            } else {
+                option.setAttribute("filtered", true)
+                console.log("filtered", option.getAttribute("value"))
+            }
+        })
     }
 
     updateItems(items) {

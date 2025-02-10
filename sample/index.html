@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="./libcss.js" type="module"></script>
-    <script src="./libjs.js" type="module"></script>
+    <script src="../libcss.js" type="module"></script>
+    <script src="../libjs.js" type="module"></script>
     <style>
         @media (prefers-color-scheme: dark) {
             body {
@@ -62,11 +62,12 @@
                 </div>
             </div>
         </div>
+
         <div id="root">
             <section class="layout-ui">
-                <div class="flex-1">
+                <div class="flex-1 w-16">
                     <search-select
-                        title="Select with a SearchBar"
+                        title="Select with a SearchBar elipsis"
                         placeholder="this is a placeholder"
                         value=""
                         filtered="true"
@@ -74,10 +75,51 @@
                     >
                         <option value="item 1">item 1</option>
                         <option value="item 2">item 2</option>
-                        <option value="item 3">item 3</option>
+                        <option value="item 3" selected>item 3</option>
+                        <option value="item 4">item 4</option>
+                        <option value="item 5">item 5</option>
+                        <option value="item 6">item 6</option>
+                        <option value="item 7" selected>item 7</option>
+                        <option value="item 8">item 8</option>
+                        <option value="item 9">item 9</option>
+                        <option value="item 10">item 10</option>
+                        <option value="item 11">item 11</option>
+                        <option value="item 12">item 12</option>
+                        <option value="item 13">item 13</option>
+                    </search-select>
+                </div>
+                <div class="flex-1">
+                    <search-select
+                        title="Select with a SearchBar"
+                        placeholder="this is a placeholder"
+                        value=""
+                        filtered="false"
+                        multi-selection="true"
+                        open="true"
+                    >
+                        <option value="item 1">item 1</option>
+                        <option value="item 2">item 2</option>
+                        <option value="item 3" selected>item 3</option>
+                        <option value="item 4">item 4</option>
+                        <option value="item 5">item 5</option>
+                        <option value="item 6">item 6</option>
+                        <option value="item 7" selected>item 7</option>
+                        <option value="item 8">item 8</option>
+                        <option value="item 9">item 9</option>
+                        <option value="item 10">item 10</option>
+                        <option value="item 11">item 11</option>
+                        <option value="item 12">item 12</option>
+                        <option value="item 13">item 13</option>
                     </search-select>
                 </div>
                 <div class="flex-1" id="js-searchbar"></div>
+                <div class="flex-1">
+                    <select class="w-full h-10 rounded-lg">
+                        <option value="item 1">item <strong>1</strong><div class="w-4 h-4 rounded-md border bg-red"></div></option>
+                        <option value="item 2">item 2</option>
+                        <option value="item 3">item 3</option>
+                    </select>
+                </div>
             </section>
         </div>
     </div>
